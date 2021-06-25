@@ -259,7 +259,10 @@ class HSApiRequest<RequestDataType, ResponseDataType> extends HSNetworkRequest<R
                          @NonNull HSAppParams appParams,
                          @NonNull JSONObject target) throws Exception {
             JSONObject servicesJson = new JSONObject();
-            for (HSComponent component : HSComponentRegistry.getServices()) {
+            List<HSComponent> components = new ArrayList<>();
+            components.addAll(HSComponentRegistry.getServices());
+            components.addAll(HSComponentRegistry.getConnectors());
+            for (HSComponent component : components) {
                 JSONObject componentJson = new JSONObject();
                 componentJson.put("sdk", component.getVersion());
                 componentJson.put("ver", component.getAdapterVersion());

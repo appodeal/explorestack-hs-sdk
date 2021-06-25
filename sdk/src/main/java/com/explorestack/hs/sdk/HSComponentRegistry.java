@@ -20,14 +20,25 @@ class HSComponentRegistry {
     private static List<HSConnector> hsConnectors = new ArrayList<>();
 
     @NonNull
+    static List<HSService> getServices() {
+        return hsServices;
+    }
+
+    @NonNull
+    static List<HSRegulator> getRegulators() {
+        return hsRegulators;
+    }
+
+    @NonNull
+    static List<HSConnector> getConnectors() {
+        return hsConnectors;
+    }
+
+    @NonNull
     static List<HSService> registerServices(@NonNull HSAppInstance app, @NonNull Context context) {
         if (hsServices.isEmpty()) {
             hsServices = create(findHSServicesAssetParams(context));
         }
-        return hsServices;
-    }
-
-    static List<HSService> getServices() {
         return hsServices;
     }
 
