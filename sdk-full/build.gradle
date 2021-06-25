@@ -11,4 +11,7 @@ android {
         versionCode 0
         versionName obtainVersion(':sdk') + ".${versionCode}"
     }
+    buildFeatures {
+        buildConfig = false
+    }
 }

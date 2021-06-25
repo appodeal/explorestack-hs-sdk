@@ -57,7 +57,7 @@ afterEvaluate {
                         collectRegulators().forEach { components.add(it) }
                         components.forEach { project ->
                             def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', project.group)
+                            dependencyNode.appendNode('groupId', project.ext.publishGroupId)
                             dependencyNode.appendNode('artifactId', project.name)
                             dependencyNode.appendNode('version', obtainHSComponentAarVersion(project))
                         }
