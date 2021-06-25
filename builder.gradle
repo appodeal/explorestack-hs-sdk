@@ -58,7 +58,7 @@ private generateAsset(variant, HSComponentParent, HSComponentPath) {
     }
     Map<String, String> values = new HashMap<>()
     values.put("name", '\"' + project.name + '\"')
-    values.put("sdk", project.ext.sdkVersion)
+    values.put("sdk", project.ext.componentSdkVersion)
     values.put("classpath", "\"" + configClassPath + "\"")
     StringBuilder jsonOutput = new StringBuilder()
     values.forEach(new BiConsumer<String, String>() {

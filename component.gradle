@@ -1,7 +1,28 @@
-apply from: "${rootDir}/default.gradle"
-apply from: "${rootDir}/builder.gradle"
+ext {
+    componentVersionCode = 1
+    componentSdkVersion = '1.0.0'
+}
+
+android {
+    defaultConfig {
+        consumerProguardFiles "consumer-rules.pro"
+    }
+}
 
 dependencies {
-    remoteDependency "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    remoteDependency 'androidx.annotation:annotation:1.0.0'
+    compileOnly project(path: ':sdk')
 }
+
+afterEvaluate {
+    android {
+        defaultConfig {
+            versionCode componentVersionCode
+            versionName "${versionCode}"
+            buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${componentSdkVersion}\""
+            buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
+        }
+    }
+}
+
+apply from: "${rootDir}/default.gradle"
+apply from: "${rootDir}/builder.gradle"
