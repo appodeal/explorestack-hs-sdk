@@ -10,8 +10,8 @@ import com.explorestack.hs.sdk.HSComponentCallback
 import com.explorestack.hs.sdk.HSComponentParams
 import com.explorestack.hs.sdk.HSRegulator
 
-class HSStackRegulator : HSRegulator<Consent>(
-    "Stack Consent Manager",
+class HSAppodealStackRegulator : HSRegulator<Consent>(
+    "Appodeal Stack Consent Manager",
     BuildConfig.COMPONENT_SDK_VERSION,
     BuildConfig.COMPONENT_VERSION
 ) {
@@ -29,8 +29,7 @@ class HSStackRegulator : HSRegulator<Consent>(
             return
         }
         _consentManager = ConsentManager.getInstance(context)
-        // TODO: 21.06.2021 set extra data for tracking id
-        // consentManager.setExtraData("track_id", params.trackId)
+        consentManager.setExtraData("track_id", params.trackId)
         consentManager.requestConsentInfoUpdate(
             params.appKey!!,
             object : ConsentInfoUpdateListener {
@@ -58,8 +57,7 @@ class HSStackRegulator : HSRegulator<Consent>(
         consentForm = Builder(context)
             .withListener(object : ConsentFormListener {
                 override fun onConsentFormLoaded() {
-                    // TODO: 21.05.2021
-                    consentForm!!.showAsActivity()
+                    consentForm?.showAsActivity()
                 }
 
                 override fun onConsentFormError(exception: ConsentManagerException) {

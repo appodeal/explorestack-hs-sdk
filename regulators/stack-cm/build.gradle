@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply from: '../regulators.gradle'
 
 ext {
-    sdkVersion = "1.0.4"
+    sdkVersion = "1.0.5"
 }
 
 android {
