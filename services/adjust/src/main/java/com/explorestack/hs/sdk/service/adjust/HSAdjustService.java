@@ -45,6 +45,7 @@ public class HSAdjustService extends HSService {
     private static OnAttributionChangedListener externalAttributionListener;
     @Nullable
     private static OnADJPVerificationFinished externalPurchaseValidatorListener;
+
     @Nullable
     private Map<String, String> eventTokens = null;
 
@@ -97,6 +98,7 @@ public class HSAdjustService extends HSService {
         adjustPurchaseConfig.setLogLevel(params.isLoggingEnabled() ? ADJPLogLevel.VERBOSE : ADJPLogLevel.INFO);
         AdjustPurchase.init(adjustPurchaseConfig);
 
+        connectorCallback.setExtra("mmp", "adjust");
         AdjustAttribution attribution = Adjust.getAttribution();
         if (attribution != null && !TextUtils.isEmpty(attribution.adid)) {
             connectorCallback.setAttributionId("attribution_id", attribution.adid);
