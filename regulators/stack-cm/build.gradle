@@ -1,27 +1,10 @@
 apply plugin: 'com.android.library'
 apply from: '../regulators.gradle'
 
-ext {
-    sdkVersion = "1.0.5"
-}
-
-android {
-    defaultConfig {
-        versionCode 1
-        versionName "${versionCode}"
-        buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${sdkVersion}\""
-        buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
-        consumerProguardFiles "consumer-rules.pro"
-    }
-}
-
-repositories {
-    maven {
-        url "https://artifactory.appodeal.com/appodeal"
-    }
-}
+componentVersionCode = 1
+componentSdkVersion = '1.0.5'
 
 dependencies {
     //Explorestack Consent SDK
-    remoteDependency "com.explorestack:consent:$sdkVersion"
+    remoteDependency "com.explorestack:consent:$componentSdkVersion"
 }

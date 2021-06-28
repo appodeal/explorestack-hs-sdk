@@ -12,7 +12,7 @@ import com.explorestack.hs.sdk.HSRegulator
 
 class HSAppodealStackRegulator : HSRegulator<Consent>(
     "Appodeal Stack Consent Manager",
-    BuildConfig.COMPONENT_SDK_VERSION,
+    ConsentManager.getVersion(),
     BuildConfig.COMPONENT_VERSION
 ) {
 
