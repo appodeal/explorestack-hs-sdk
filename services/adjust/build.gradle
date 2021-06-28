@@ -1,29 +1,12 @@
 apply plugin: 'com.android.library'
 apply from: '../service.gradle'
 
-ext {
-    sdkVersion = "4.28.1"
-}
-
-android {
-    defaultConfig {
-        versionCode 1
-        versionName "${versionCode}"
-        buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${sdkVersion}\""
-        buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
-        consumerProguardFiles "consumer-rules.pro"
-    }
-}
-
-repositories {
-    maven {
-        url "https://artifactory.appodeal.com/appodeal"
-    }
-}
+componentVersionCode = 1
+componentSdkVersion = '4.28.1'
 
 dependencies {
     //Adjust SDK
-    remoteDependency "com.adjust.sdk:adjust-android:$sdkVersion"
+    remoteDependency "com.adjust.sdk:adjust-android:$componentSdkVersion"
     //Adjust Purchase SDK
     remoteDependency 'com.explorestack.adjust:sdk-purchase:1.1.2'
     //Play Install Referrer Library for Adjust SDK

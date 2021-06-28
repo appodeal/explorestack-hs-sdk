@@ -1,21 +1,10 @@
 apply plugin: 'com.android.library'
 apply from: '../service.gradle'
 
-ext {
-    sdkVersion = "7.1.0"
-}
-
-android {
-    defaultConfig {
-        versionCode 1
-        versionName "${versionCode}"
-        buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${sdkVersion}\""
-        buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
-        consumerProguardFiles "consumer-rules.pro"
-    }
-}
+componentVersionCode = 1
+componentSdkVersion = '7.1.0'
 
 dependencies {
     //Facebook Core SDK
-    remoteDependency "com.facebook.android:facebook-core:$sdkVersion"
+    remoteDependency "com.facebook.android:facebook-core:$componentSdkVersion"
 }

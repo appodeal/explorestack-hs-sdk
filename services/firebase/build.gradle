@@ -1,22 +1,11 @@
 apply plugin: 'com.android.library'
 apply from: '../service.gradle'
 
-ext {
-    sdkVersion = "18.0.0"
-}
-
-android {
-    defaultConfig {
-        versionCode 1
-        versionName "${versionCode}"
-        buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${sdkVersion}\""
-        buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
-        consumerProguardFiles "consumer-rules.pro"
-    }
-}
+componentVersionCode = 1
+componentSdkVersion = '18.0.0'
 
 dependencies {
     //Firebase Remote Config SDK
     remoteDependency 'com.google.firebase:firebase-config:20.0.0'
-    remoteDependency "com.google.firebase:firebase-analytics:$sdkVersion"
+    remoteDependency "com.google.firebase:firebase-analytics:$componentSdkVersion"
 }
