@@ -46,7 +46,7 @@ afterEvaluate {
             "_${project.name}_"(MavenPublication) {
                 groupId = project.publishGroupId
                 artifactId = project.hasProperty('publishArtifactId') ? publishArtifactId : project.name
-                version = obtainHSComponentAarVersion(project)
+                version = obtainAarVersion(project)
                 artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
                 pom.withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
@@ -59,14 +59,14 @@ afterEvaluate {
                             def dependencyNode = dependenciesNode.appendNode('dependency')
                             dependencyNode.appendNode('groupId', project.ext.publishGroupId)
                             dependencyNode.appendNode('artifactId', project.name)
-                            dependencyNode.appendNode('version', obtainHSComponentAarVersion(project))
+                            dependencyNode.appendNode('version', obtainAarVersion(project))
                         }
                     }
                     if (project.name != core.name) {
                         def dependencyNode = dependenciesNode.appendNode('dependency')
                         dependencyNode.appendNode('groupId', core.ext.publishGroupId)
                         dependencyNode.appendNode('artifactId', core.ext.publishArtifactId)
-                        dependencyNode.appendNode('version', obtainHSComponentAarVersion(core))
+                        dependencyNode.appendNode('version', obtainAarVersion(core))
                     }
                     project.configurations.remoteDependency.getDependencies().each { dependency ->
                         if (dependency instanceof ExternalModuleDependency) {

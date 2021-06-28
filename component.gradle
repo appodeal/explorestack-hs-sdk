@@ -19,7 +19,7 @@ afterEvaluate {
             versionCode componentVersionCode
             versionName "${versionCode}"
             buildConfigField "String", "COMPONENT_SDK_VERSION", "\"${componentSdkVersion}\""
-            buildConfigField "String", "COMPONENT_VERSION", "\"${obtainHSComponentAarVersion(project)}\""
+            buildConfigField "String", "COMPONENT_VERSION", "\"${obtainAarVersion(project)}\""
         }
     }
 }

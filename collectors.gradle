@@ -24,7 +24,7 @@ private List<Project> collectProjects(String rootProject,
     return resultProjects
 }
 
-String obtainHSComponentAarVersion(Project targetProject) {
+String obtainAarVersion(Project targetProject) {
     if (targetProject.name == project(':sdk').name
             || targetProject.name == project(':sdk-full').name) {
         return "${obtainVersion(targetProject)}"
@@ -44,6 +44,6 @@ ext {
     collectServices = this.&collectServices
     collectConnectors = this.&collectConnectors
     collectRegulators = this.&collectRegulators
-    obtainHSComponentAarVersion = this.&obtainHSComponentAarVersion
+    obtainAarVersion = this.&obtainAarVersion
     obtainVersion = this.&obtainVersion
 }

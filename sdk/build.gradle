@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply from: "${rootDir}/component.gradle"
+apply from: "${rootDir}/default.gradle"
 
 ext {
     publishGroupId = "com.explorestack.hs.sdk"
@@ -14,4 +14,9 @@ android {
         buildConfigField "String", "HS_API_URL", "\"https://a.appbaqend.com/hs\""
         consumerProguardFiles "consumer-rules.pro"
     }
+}
+
+dependencies {
+    remoteDependency "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    remoteDependency 'androidx.annotation:annotation:1.0.0'
 }
