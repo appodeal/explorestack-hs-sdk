@@ -86,7 +86,9 @@ public class HSAdjustService extends HSService {
 
         HSAdvertisingProfile advertisingProfile = params.getAdvertisingProfile();
         if (advertisingProfile != null && advertisingProfile.isZero()) {
-            adjustConfig.setExternalDeviceId(advertisingProfile.getId(context));
+            String idfa = advertisingProfile.getId(context);
+            Adjust.addSessionCallbackParameter("externalDeviceId", idfa);
+            adjustConfig.setExternalDeviceId(idfa);
         }
         if (context instanceof Application) {
             ((Application) context).registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
