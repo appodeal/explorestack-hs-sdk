@@ -121,7 +121,7 @@ public class HSAdjustService extends HSService {
     }
 
     @Nullable
-    private String getOrDefault(@NonNull String eventName) {
+    private String getEventToken(@NonNull String eventName) {
         String eventToken;
         if (eventTokens != null) {
             if (((eventToken = eventTokens.get(eventName)) != null) || eventTokens.containsKey(eventName)) {
@@ -217,7 +217,7 @@ public class HSAdjustService extends HSService {
         @Override
         public void onEvent(@NonNull String eventName,
                             @Nullable Map<String, Object> params) {
-            String eventToken = getOrDefault(eventName);
+            String eventToken = getEventToken(eventName);
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
             if (params != null && params.size() > 0) {
                 for (Map.Entry<String, Object> param : params.entrySet()) {
@@ -243,8 +243,10 @@ public class HSAdjustService extends HSService {
                                             @NonNull HSIAPValidateCallback callback) {
             pendingCallback = callback;
             pendingPurchase = purchase;
-            AdjustPurchase.verifyPurchase(purchase.getSku(), purchase.getPurchaseToken(),
-                    purchase.getPurchaseData(), this);
+            AdjustPurchase.verifyPurchase(purchase.getSku(),
+                                          purchase.getPurchaseToken(),
+                                          purchase.getPurchaseData(),
+                                          this);
         }
 
         @Override
@@ -269,19 +271,19 @@ public class HSAdjustService extends HSService {
                         break;
                     }
                     case ADJPVerificationStateFailed: {
-                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
+                        AdjustEvent event = new AdjustEvent(getEventToken("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase verification state failed"));
                         break;
                     }
                     case ADJPVerificationStateUnknown: {
-                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
+                        AdjustEvent event = new AdjustEvent(getEventToken("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase verification state unknown"));
                         break;
                     }
                     default: {
-                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
+                        AdjustEvent event = new AdjustEvent(getEventToken("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase not verified"));
                         break;
@@ -327,7 +329,7 @@ public class HSAdjustService extends HSService {
                 String currency = purchase.getCurrency();
                 Double price = HSUtils.parsePrice(purchasePrice, currency);
                 if (price != null) {
-                    AdjustEvent event = new AdjustEvent(getOrDefault("Purchase"));
+                    AdjustEvent event = new AdjustEvent(getEventToken("Purchase"));
                     event.setRevenue(price, currency);
                     Map<String, String> params = purchase.getAdditionalParameters();
                     if (params != null && params.size() > 0) {
