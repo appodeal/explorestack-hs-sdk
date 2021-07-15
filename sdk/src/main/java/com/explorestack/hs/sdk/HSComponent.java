@@ -31,6 +31,11 @@ public class HSComponent {
     }
 
     @NonNull
+    public String getServerName() {
+        return name.toLowerCase();
+    }
+
+    @NonNull
     public String getVersion() {
         return version;
     }

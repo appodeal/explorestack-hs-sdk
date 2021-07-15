@@ -34,6 +34,8 @@ public class ExampleApplication extends MultiDexApplication {
         }
         isInitializingHsApp = true;
 
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.verbose);
+        Appodeal.setAutoCache(Appodeal.INTERSTITIAL, false);
         //Create HSApp configuration
         HSAppConfig appConfig = new HSAppConfig()
                 .setDebugEnabled(true)

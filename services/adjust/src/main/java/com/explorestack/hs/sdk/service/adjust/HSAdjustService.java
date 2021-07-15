@@ -120,6 +120,19 @@ public class HSAdjustService extends HSService {
         return new HSIAPValidateDelegate();
     }
 
+    @Nullable
+    private String getOrDefault(@NonNull String eventName) {
+        String eventToken;
+        if (eventTokens != null) {
+            if (((eventToken = eventTokens.get(eventName)) != null) || eventTokens.containsKey(eventName)) {
+                return eventToken;
+            } else {
+                return eventTokens.get("Unknown");
+            }
+        }
+        return null;
+    }
+
     private static final class AttributionChangedListener implements OnAttributionChangedListener {
 
         @NonNull
@@ -199,17 +212,19 @@ public class HSAdjustService extends HSService {
         }
     }
 
-    private static final class HSEventsDelegate implements HSEventsHandler {
+    private final class HSEventsDelegate implements HSEventsHandler {
 
         @Override
         public void onEvent(@NonNull String eventName,
                             @Nullable Map<String, Object> params) {
-            AdjustEvent adjustEvent = new AdjustEvent(eventName);
+            String eventToken = getOrDefault(eventName);
+            AdjustEvent adjustEvent = new AdjustEvent(eventToken);
             if (params != null && params.size() > 0) {
                 for (Map.Entry<String, Object> param : params.entrySet()) {
-                    // TODO: 15.05.2021 additional params
-                    adjustEvent.addCallbackParameter(param.getKey(), String.valueOf(param.getValue()));
-                    adjustEvent.addPartnerParameter(param.getKey(), String.valueOf(param.getValue()));
+                    String key = param.getKey();
+                    String value = String.valueOf(param.getValue());
+                    adjustEvent.addCallbackParameter(key, value);
+                    adjustEvent.addPartnerParameter(key, value);
                 }
             }
             Adjust.trackEvent(adjustEvent);
@@ -254,19 +269,19 @@ public class HSAdjustService extends HSService {
                         break;
                     }
                     case ADJPVerificationStateFailed: {
-                        AdjustEvent event = new AdjustEvent("{RevenueEventFailedToken}");
+                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase verification state failed"));
                         break;
                     }
                     case ADJPVerificationStateUnknown: {
-                        AdjustEvent event = new AdjustEvent("{RevenueEventUnknownToken}");
+                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase verification state unknown"));
                         break;
                     }
                     default: {
-                        AdjustEvent event = new AdjustEvent("{RevenueEventNotVerifiedToken}");
+                        AdjustEvent event = new AdjustEvent(getOrDefault("PurchaseError"));
                         Adjust.trackEvent(event);
                         onFail(buildError("Adjust purchase not verified"));
                         break;
@@ -284,15 +299,23 @@ public class HSAdjustService extends HSService {
                 String currency = purchase.getCurrency();
                 Double price = HSUtils.parsePrice(purchasePrice, currency);
                 if (price != null) {
-                    AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-                            price.longValue(),
-                            currency,
-                            purchase.getSku(),
-                            purchase.getOrderId(),
-                            purchase.getSignature(),
-                            purchase.getPurchaseToken()
-                    );
+                    AdjustPlayStoreSubscription subscription =
+                            new AdjustPlayStoreSubscription(price.longValue(),
+                                                            currency,
+                                                            purchase.getSku(),
+                                                            purchase.getOrderId(),
+                                                            purchase.getSignature(),
+                                                            purchase.getPurchaseToken());
                     subscription.setPurchaseTime(purchase.getPurchaseTimestamp());
+                    Map<String, String> params = purchase.getAdditionalParameters();
+                    if (params != null && params.size() > 0) {
+                        for (Map.Entry<String, String> param : params.entrySet()) {
+                            String key = param.getKey();
+                            String value = param.getValue();
+                            subscription.addCallbackParameter(key, value);
+                            subscription.addPartnerParameter(key, value);
+                        }
+                    }
                     Adjust.trackPlayStoreSubscription(subscription);
                 }
             }
@@ -304,8 +327,17 @@ public class HSAdjustService extends HSService {
                 String currency = purchase.getCurrency();
                 Double price = HSUtils.parsePrice(purchasePrice, currency);
                 if (price != null) {
-                    AdjustEvent event = new AdjustEvent("{RevenueEventPassedToken}");
+                    AdjustEvent event = new AdjustEvent(getOrDefault("Purchase"));
                     event.setRevenue(price, currency);
+                    Map<String, String> params = purchase.getAdditionalParameters();
+                    if (params != null && params.size() > 0) {
+                        for (Map.Entry<String, String> param : params.entrySet()) {
+                            String key = param.getKey();
+                            String value = param.getValue();
+                            event.addCallbackParameter(key, value);
+                            event.addPartnerParameter(key, value);
+                        }
+                    }
                     Adjust.trackEvent(event);
                     onSuccess();
                 }

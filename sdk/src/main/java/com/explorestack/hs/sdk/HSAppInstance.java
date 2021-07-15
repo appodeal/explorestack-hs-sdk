@@ -439,7 +439,7 @@ class HSAppInstance {
 
         @Override
         boolean isComponentEnable(@NonNull HSService component) {
-            return serverParams.has(component.getName().toLowerCase());
+            return serverParams.has(component.getServerName());
         }
 
         @Override
@@ -459,7 +459,7 @@ class HSAppInstance {
         @NonNull
         @Override
         HSComponentParams getParams(@NonNull HSService component) {
-            JSONObject extra = serverParams.optJSONObject(component.getName().toLowerCase());
+            JSONObject extra = serverParams.optJSONObject(component.getServerName());
             extra = extra == null ? new JSONObject() : extra;
             configureComponent(component, extra);
             return new HSComponentParamsImpl(appParams, extra);

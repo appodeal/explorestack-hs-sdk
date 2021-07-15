@@ -8,6 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
 import com.explorestack.hs.sdk.HSApp;
 import com.explorestack.hs.sdk.HSAppInitializeListener;
 import com.explorestack.hs.sdk.HSError;
@@ -18,12 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.explorestack.hs.sdk.HSInAppPurchase.PurchaseType;
+
 public class ExampleActivity extends AppCompatActivity {
 
     private static final String TAG = ExampleActivity.class.getSimpleName();
 
-    static final public String SKU_INFINITE_ACCESS_MONTHLY = "infinite_access_monthly";
-    static final public String SKU_COINS = "coins";
+    private static final String SKU_INFINITE_ACCESS_MONTHLY = "infinite_access_monthly";
+    private static final String SKU_COINS = "coins";
+
+    private ExampleBillingClient billingClient;
 
     private final HSAppInitializeListener hsAppInitializeListener = new HSAppInitializeListener() {
         @Override
@@ -37,8 +46,21 @@ public class ExampleActivity extends AppCompatActivity {
         }
     };
 
-    ExampleBillingClient billingClient;
-
+    private final PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
+        @Override
+        public void onPurchasesUpdated(@NonNull BillingResult billingResult,
+                                       @Nullable List<Purchase> purchaseList) {
+            Log.v(TAG, "HSApp: onPurchasesUpdated");
+            int responseCode = billingResult.getResponseCode();
+            if (responseCode == BillingClient.BillingResponseCode.OK && purchaseList != null) {
+                for (Purchase purchase : purchaseList) {
+                    validatePurchase(purchase);
+                }
+            } else {
+                Log.d(TAG, "HSApp: [Error]: Null Purchase List Returned from OK response!");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +76,16 @@ public class ExampleActivity extends AppCompatActivity {
             ExampleApplication.initializeHSApp(getApplicationContext());
         }
 
-        billingClient = new ExampleBillingClient(this, SKU_COINS, SKU_INFINITE_ACCESS_MONTHLY);
-        billingClient.start();
+        billingClient = new ExampleBillingClient(getApplicationContext(),
+                                                 SKU_COINS,
+                                                 SKU_INFINITE_ACCESS_MONTHLY,
+                                                 purchasesUpdatedListener);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        billingClient.resume();
     }
 
     @Override
@@ -82,24 +111,44 @@ public class ExampleActivity extends AppCompatActivity {
     /**
      * Example of purchase validating
      */
-    public void validatePurchase(View view) {
-        String price = "10";
-        String currency = "USD";
+    public void flowInAppPurchase(View view) {
+        billingClient.flow(this, SKU_COINS);
+    }
+
+    public void flowSubsPurchase(View view) {
+        billingClient.flow(this, SKU_INFINITE_ACCESS_MONTHLY);
+    }
+
+    private void validatePurchase(@NonNull Purchase purchase) {
+        String sku = firstOrNull(purchase.getSkus());
+        SkuDetails skuDetails = billingClient.getSkuDetails(sku);
+        if (skuDetails == null) {
+            Log.d(TAG, "HSApp: [Error]: SkuDetails is null");
+            return;
+        }
+
+        String price = skuDetails.getPrice();
+        String currency = skuDetails.getPriceCurrencyCode();
         Map<String, String> additionalEventValues = new HashMap<>();
         additionalEventValues.put("some_parameter", "some_value");
 
         // Create new HSInAppPurchase
-        HSInAppPurchase purchase = HSInAppPurchase.newPurchaseBuilder()
+        PurchaseType purchaseType = PurchaseType.valueOf(skuDetails.getType());
+        HSInAppPurchase hsPurchase = HSInAppPurchase.newBuilder(purchaseType)
                 .withPublicKey("YOUR_PUBLIC_KEY")
-                .withSignature("YOUR_SIGNATURE") //e.g: purchase.getSignature()
-                .withPurchaseData("YOUR_PURCHASE_DATA") //e.g: purchase.getOriginalJson()
+                .withSignature(purchase.getSignature())
+                .withPurchaseData(purchase.getOriginalJson())
+                .withPurchaseToken(purchase.getPurchaseToken())
+                .withPurchaseTimestamp(purchase.getPurchaseTime())
+                .withOrderId(purchase.getOrderId())
+                .withSku(sku)
                 .withPrice(price)
                 .withCurrency(currency)
                 .withAdditionalParams(additionalEventValues)
                 .build();
 
         // Validate InApp purchase
-        HSApp.validateInAppPurchase(purchase, new HSInAppPurchaseValidateListener() {
+        HSApp.validateInAppPurchase(hsPurchase, new HSInAppPurchaseValidateListener() {
             @Override
             public void onInAppPurchaseValidateSuccess(@NonNull HSInAppPurchase purchase,
                                                        @Nullable List<HSError> errors) {
@@ -119,5 +168,13 @@ public class ExampleActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Nullable
+    private <T> T firstOrNull(@Nullable List<T> list) {
+        if (list != null && !list.isEmpty()) {
+            return list.get(0);
+        }
+        return null;
     }
 }
