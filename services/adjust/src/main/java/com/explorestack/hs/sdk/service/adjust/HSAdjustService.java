@@ -319,8 +319,11 @@ public class HSAdjustService extends HSService {
                         }
                     }
                     Adjust.trackPlayStoreSubscription(subscription);
+                    onSuccess();
+                    return;
                 }
             }
+            onFail(buildError("Adjust subscription track failed"));
         }
 
         private void trackInApp(@NonNull HSInAppPurchase purchase) {
@@ -342,8 +345,10 @@ public class HSAdjustService extends HSService {
                     }
                     Adjust.trackEvent(event);
                     onSuccess();
+                    return;
                 }
             }
+            onFail(buildError("Adjust in-app track failed"));
         }
 
         private void onSuccess() {

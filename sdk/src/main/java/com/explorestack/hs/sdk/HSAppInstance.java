@@ -274,7 +274,7 @@ class HSAppInstance {
                 if (initializerBuilder.isComponentEnable(component)) {
                     components.add(component);
                 } else {
-                    HSLogger.logError(TAG, String.format("HSComponent (%s) disabled on the server!", component.getName()));
+                    addError(HSError.forComponent(component, "disabled on the server!"));
                 }
             }
             final CountDownLatch componentsWaiter = new CountDownLatch(components.size());
