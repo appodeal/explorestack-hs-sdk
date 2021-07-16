@@ -258,10 +258,10 @@ public class HSAdjustService extends HSService {
                     case ADJPVerificationStatePassed: {
                         if (pendingPurchase != null) {
                             switch (pendingPurchase.getType()) {
-                                case PURCHASE:
-                                    trackPurchase(pendingPurchase);
+                                case INAPP:
+                                    trackInApp(pendingPurchase);
                                     break;
-                                case SUBSCRIPTION:
+                                case SUBS:
                                     trackSubscription(pendingPurchase);
                                     break;
                             }
@@ -323,7 +323,7 @@ public class HSAdjustService extends HSService {
             }
         }
 
-        private void trackPurchase(@NonNull HSInAppPurchase purchase) {
+        private void trackInApp(@NonNull HSInAppPurchase purchase) {
             String purchasePrice;
             if ((purchasePrice = purchase.getPrice()) != null) {
                 String currency = purchase.getCurrency();

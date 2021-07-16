@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class HSInAppPurchase {
 
-    public enum PurchaseType {SUBSCRIPTION, PURCHASE}
+    public enum PurchaseType {INAPP, SUBS}
 
     private PurchaseType type;
     private String publicKey;
@@ -69,12 +69,12 @@ public class HSInAppPurchase {
         return new HSInAppPurchase().new Builder(type);
     }
 
-    public static Builder newPurchaseBuilder() {
-        return newBuilder(PurchaseType.PURCHASE);
+    public static Builder newInAppBuilder() {
+        return newBuilder(PurchaseType.INAPP);
     }
 
     public static Builder newSubscriptionBuilder() {
-        return newBuilder(PurchaseType.SUBSCRIPTION);
+        return newBuilder(PurchaseType.SUBS);
     }
 
     @Override

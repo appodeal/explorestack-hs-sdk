@@ -133,7 +133,7 @@ public class ExampleActivity extends AppCompatActivity {
         additionalEventValues.put("some_parameter", "some_value");
 
         // Create new HSInAppPurchase
-        PurchaseType purchaseType = PurchaseType.valueOf(skuDetails.getType());
+        PurchaseType purchaseType = PurchaseType.valueOf(skuDetails.getType().toUpperCase());
         HSInAppPurchase hsPurchase = HSInAppPurchase.newBuilder(purchaseType)
                 .withPublicKey("YOUR_PUBLIC_KEY")
                 .withSignature(purchase.getSignature())
